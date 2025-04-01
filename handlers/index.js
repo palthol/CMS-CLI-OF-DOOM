@@ -1,6 +1,6 @@
 // Main action router
 const inquirer = require('inquirer');
-const { getMenuChoices } = require('../config/menu');
+const { getMenuChoices } = require('../utils/menu');
 const { displaySuccess, displayError } = require('../utils/display');
 const db = require('../db/connection');
 
@@ -8,7 +8,6 @@ const departmentHandlers = require('./department');
 const roleHandlers = require('./role');
 const employeeHandlers = require('./employee');
 
-// Action mapping for cleaner routing
 // Action mapping for cleaner routing
 const actionHandlers = {
     // Department actions
