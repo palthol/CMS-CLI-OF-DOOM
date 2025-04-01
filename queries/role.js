@@ -1,31 +1,35 @@
-const db = require("../db");
+const db = require('../db/connection');
 
 // View all roles
 const viewRoles = async () => {
     const { rows } = await db.query(
-        `SELECT role.id, role.title, role.salary, department.name AS department
-         FROM role
-         JOIN department ON role.department_id = department.id;`
+        `SELECT r.id, r.title, r.salary, d.name AS department
+         FROM role r
+         LEFT JOIN department d ON r.department_id = d.id
+         ORDER BY r.title`
     );
     return rows;
 };
 
-// Add a new role
+// Add a role
 const addRole = async (title, salary, departmentId) => {
-    await db.query(
-        "INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)",
+    const { rows } = await db.query(
+        `INSERT INTO role (title, salary, department_id) 
+         VALUES ($1, $2, $3) 
+         RETURNING id`,
         [title, salary, departmentId]
     );
-    return `Role "${title}" added successfully!`;
+    return `Role '${title}' added successfully!`;
 };
 
-
-// Add to queries/role.js
+// Delete a role
 const deleteRole = async (id) => {
-    await db.query("DELETE FROM role WHERE id = $1", [id]);
+    await db.query('DELETE FROM role WHERE id = $1', [id]);
     return `Role deleted successfully!`;
 };
 
-
-
-module.exports = { viewRoles, addRole, deleteRole };
+module.exports = {
+    viewRoles,
+    addRole,
+    deleteRole
+};

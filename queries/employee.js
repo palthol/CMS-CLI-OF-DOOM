@@ -1,95 +1,93 @@
-const db = require("../db");
+const db = require('../db/connection');
 
 // View all employees
 const viewEmployees = async () => {
     const { rows } = await db.query(
-        `SELECT 
-            e.id, 
-            e.first_name, 
-            e.last_name, 
-            r.title AS job_title, 
-            d.name AS department, 
-            r.salary, 
-            CONCAT(m.first_name, ' ', m.last_name) AS manager
+        `SELECT e.id, e.first_name, e.last_name, 
+         r.title AS job_title, d.name AS department,
+         r.salary, 
+         CONCAT(m.first_name, ' ', m.last_name) AS manager
          FROM employee e
+         LEFT JOIN role r ON e.role_id = r.id
+         LEFT JOIN department d ON r.department_id = d.id
          LEFT JOIN employee m ON e.manager_id = m.id
-         JOIN role r ON e.role_id = r.id
-         JOIN department d ON r.department_id = d.id;`
+         ORDER BY e.last_name, e.first_name`
     );
     return rows;
 };
 
-// Rest of the file remains the same
-
-// Add a new employee
-const addEmployee = async (firstName, lastName, roleId, managerId) => {
-    await db.query(
-        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)",
-        [firstName, lastName, roleId, managerId]
-    );
-    return `Employee "${firstName} ${lastName}" added successfully!`;
-};
-
-// Update an employee role
-const updateEmployeeRole = async (employeeId, newRoleId) => {
-    await db.query(
-        "UPDATE employee SET role_id = $1 WHERE id = $2",
-        [newRoleId, employeeId]
-    );
-    return `Employee ID ${employeeId} updated to role ID ${newRoleId}.`;
-};
-
-const updateEmployeeManager = async (employeeId, newManagerId) => {
-    await db.query(
-        "UPDATE employee SET manager_id = $1 WHERE id = $2",
-        [newManagerId, employeeId]
-    );
-    return `Employee's manager updated successfully!`;
-};
-
-
+// View employees by manager
 const viewEmployeesByManager = async (managerId) => {
     const { rows } = await db.query(
-        `SELECT 
-            e.id, 
-            e.first_name, 
-            e.last_name, 
-            r.title AS job_title, 
-            d.name AS department, 
-            r.salary
+        `SELECT e.id, e.first_name, e.last_name, 
+         r.title AS job_title, d.name AS department
          FROM employee e
-         JOIN role r ON e.role_id = r.id
-         JOIN department d ON r.department_id = d.id
-         WHERE e.manager_id = $1;`,
+         LEFT JOIN role r ON e.role_id = r.id
+         LEFT JOIN department d ON r.department_id = d.id
+         WHERE e.manager_id = $1
+         ORDER BY e.last_name, e.first_name`,
         [managerId]
     );
     return rows;
 };
 
-
+// View employees by department
 const viewEmployeesByDepartment = async (departmentId) => {
     const { rows } = await db.query(
-        `SELECT 
-            e.id, 
-            e.first_name, 
-            e.last_name, 
-            r.title AS job_title, 
-            r.salary, 
-            CONCAT(m.first_name, ' ', m.last_name) AS manager
+        `SELECT e.id, e.first_name, e.last_name, 
+         r.title AS job_title,
+         CONCAT(m.first_name, ' ', m.last_name) AS manager
          FROM employee e
+         LEFT JOIN role r ON e.role_id = r.id
          LEFT JOIN employee m ON e.manager_id = m.id
-         JOIN role r ON e.role_id = r.id
-         WHERE r.department_id = $1;`,
+         WHERE r.department_id = $1
+         ORDER BY e.last_name, e.first_name`,
         [departmentId]
     );
     return rows;
 };
 
+// Add an employee
+const addEmployee = async (firstName, lastName, roleId, managerId) => {
+    const { rows } = await db.query(
+        `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id`,
+        [firstName, lastName, roleId, managerId]
+    );
+    return `Employee ${firstName} ${lastName} added successfully!`;
+};
+
+// Delete an employee
 const deleteEmployee = async (id) => {
-    await db.query("DELETE FROM employee WHERE id = $1", [id]);
+    await db.query('DELETE FROM employee WHERE id = $1', [id]);
     return `Employee deleted successfully!`;
 };
 
+// Update employee role
+const updateEmployeeRole = async (employeeId, roleId) => {
+    await db.query(
+        'UPDATE employee SET role_id = $1 WHERE id = $2',
+        [roleId, employeeId]
+    );
+    return `Employee role updated successfully!`;
+};
 
+// Update employee manager
+const updateEmployeeManager = async (employeeId, managerId) => {
+    await db.query(
+        'UPDATE employee SET manager_id = $1 WHERE id = $2',
+        [managerId, employeeId]
+    );
+    return `Employee manager updated successfully!`;
+};
 
-module.exports = { viewEmployees, addEmployee, updateEmployeeRole, updateEmployeeManager, viewEmployeesByManager, viewEmployeesByDepartment, deleteEmployee };
+module.exports = {
+    viewEmployees,
+    viewEmployeesByManager,
+    viewEmployeesByDepartment,
+    addEmployee,
+    deleteEmployee,
+    updateEmployeeRole,
+    updateEmployeeManager
+};
