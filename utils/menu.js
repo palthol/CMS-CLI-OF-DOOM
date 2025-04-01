@@ -1,12 +1,6 @@
-const inquirer = require("inquirer");
-const chalk = require("chalk");
-
-// Colors for menu items
-const VIEW_COLOR = chalk.cyan;
-const ADD_COLOR = chalk.green;
-const UPDATE_COLOR = chalk.yellow;
-const DELETE_COLOR = chalk.red;
-const SYSTEM_COLOR = chalk.magenta;
+// Menu structure and styling
+const inquirer = require('inquirer');
+const chalk = require('chalk');
 
 // Icons for actions
 const VIEW_ICON = "[VIEW] ";
@@ -14,6 +8,9 @@ const ADD_ICON = "[ADD] ";
 const UPDATE_ICON = "[UPD] ";
 const DELETE_ICON = "[DEL] ";
 const EXIT_ICON = "[EXIT] ";
+
+// Colors
+const { VIEW_COLOR, ADD_COLOR, UPDATE_COLOR, DELETE_COLOR, SYSTEM_COLOR } = require('../utils/display');
 
 // Menu structure definition
 const menuOptions = [
@@ -42,7 +39,7 @@ const menuOptions = [
     { type: 'separator', text: chalk.magenta.bold("┌─────────── SYSTEM ─────────────┐") },
     { id: 'exit', display: SYSTEM_COLOR(EXIT_ICON + "Exit") },
     { type: 'separator', text: chalk.blue.bold("└──────────────────────────────────┘") },
-]
+];
 
 // Convert menu options to Inquirer choices
 const getMenuChoices = () => {
@@ -56,11 +53,6 @@ const getMenuChoices = () => {
 
 module.exports = {
     getMenuChoices,
-    VIEW_COLOR,
-    ADD_COLOR,
-    UPDATE_COLOR,
-    DELETE_COLOR,
-    SYSTEM_COLOR,
     VIEW_ICON,
     ADD_ICON,
     UPDATE_ICON,
