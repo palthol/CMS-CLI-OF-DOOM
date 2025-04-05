@@ -1,3 +1,5 @@
+# [**Walkthrough Video**](https://drive.google.com/file/d/1yZlXZuRoS3Ba9-vbxWmhZBb3otsFqpfF/view?usp=sharing)
+
 # 🚀 HR Management CLI
 
 ## Transform Your HR Operations with Command-Line Efficiency
@@ -28,6 +30,7 @@ Built with modern technologies for reliability and performance:
 ## 🚦 Getting Started
 
 ### Prerequisites
+
 - Node.js (v12 or higher)
 - PostgreSQL database
 
